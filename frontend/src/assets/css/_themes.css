@@ -1,0 +1,13 @@
+:root[theme='light'] {
+    --bgColor: #e7e7e7;
+    --textColor: #666;
+    --componentBgColor: #fcfcfc;
+    color-scheme: light;
+}
+
+:root[theme='dark'] {
+    --bgColor: #222;
+    --textColor: #eee;
+    --componentBgColor: #333;
+    color-scheme: dark;
+}
