@@ -35,7 +35,10 @@ let iWantData = () => {
   $socket.send({
     action: 'getData',
     api: 'pass_in_out',
-    api_body: { begin: dayjs().subtract(3, 'month').format("YYYY-MM-DD"), end: dayjs().format('YYYY-MM-DD') },
+    api_body: {
+      begin: dayjs().subtract(3, 'month').startOf('month').format("YYYY-MM-DD"),
+      end: dayjs().format('YYYY-MM-DD')
+    },
     socketType: 'pass_in_out_all'
   })
 }
@@ -43,7 +46,7 @@ let iWantData = () => {
 let getData = (resp) => {
   chartOption.dataset.source = resp.data.reduce((obj, item) => {
     if (dayjs(item.date).year() === props.year && dayjs(item.date).month() + 1 === props.month) {
-      obj.push({ "name": item.date, "value": item.count })
+      obj.push({ "name": item.date, "value": item.in_count })
     }
     return obj
   }, [])
@@ -57,7 +60,7 @@ let screenAdapt = () => {
   // 实时获取当前图表的高度(注意组合式API获取高度的方法)
   let AdaptDomHeight = chartDom.value?.clientHeight / 30
   // 根据当前DOM的高度，动态调整字体大小
-  chartOption.title.text = `学生近三月内进出校统计(${ props.year }-${ props.month })`
+  chartOption.title.text = `${ props.year }年${ props.month }月出校人数统计`
   chartOption.title.textStyle['fontSize'] = AdaptDomHeight + 10
   chartOption.tooltip.textStyle['fontSize'] = AdaptDomHeight
   chartOption.calendar['cellSize'] = [ AdaptDomHeight * 4, AdaptDomHeight * 4 ]

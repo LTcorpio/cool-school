@@ -19,8 +19,8 @@ export let option = reactive({
     },
     visualMap: {
         show: false,
-        min: 0,
-        max: 300,
+        min: 1000,
+        max: 5000,
         color: [ '#d1ecf8', '#0050b3' ]
     },
     calendar: {

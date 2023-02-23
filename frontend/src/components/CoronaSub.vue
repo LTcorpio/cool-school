@@ -34,8 +34,8 @@ let iWantData = () => {
   $socket.send({
     action: 'getData',
     api: 'corona',
-    // 实时爬虫还没有开发，开发完毕后将使用当日的日期，目前先使用历史数据
-    api_body: { begin: '2022-12-04', end: '2022-12-04' },
+    // TODO 实时爬虫还没有开发，开发完毕后将使用当日的日期，目前先使用历史数据
+    api_body: { begin: '2022-12-18', end: '2022-12-18' },
     socketType: 'corona_latest'
   })
 }
@@ -47,7 +47,7 @@ let getData = async (resp) => {
   chartData.length = chartData.data.length
 
   myChart.setOption({
-    title: { text: `各分院疫情填报率(2022-12-04)` },
+    title: { text: `各分院疫情填报率(2022-12-18)` },
     dataset: { source: chartData.data }
   })
 }

@@ -5,7 +5,7 @@
         <img alt="" onload="SVGInject(this)" src="/svg/logo_standard.svg"/>
       </div>
       <div class="title">
-        <span>智慧校园数据看板(目前为半模拟数据)</span>
+        <span>智慧校园数据看板</span>
       </div>
       <div class="title-right">
         <span ref="datetime" class="datetime" v-text="currentTime"></span>
@@ -29,18 +29,18 @@
               <i class="bi bi-calendar-date"></i>
             </button>
             <ul :class="themeStore.globalTheme === 'dark' ? 'dropdown-menu dropdown-menu-dark' : 'dropdown-menu'">
-              <li><a class="dropdown-item disabled" href="#">请选择年月以查看历史数据</a></li>
+              <li class="dropdown-item disabled">请选择年月以查看历史数据</li>
               <li>
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <option v-for="item in calendarControl.yearMonthList" :value="item.join('-')"
-                        class="dropdown-item"
-                        type="button"
-                        @click="changeYearMonth(item.join('-'))"
-                        v-text="dayjs(item.join('-')).format('YYYY 年 MM 月')">
-                </option>
+                <a v-for="item in calendarControl.yearMonthList"
+                   class="dropdown-item"
+                   @click="changeYearMonth(item.join('-'))"
+                   v-text="dayjs(item.join('-')).format('YYYY 年 MM 月')">
+                </a>
               </li>
+              <li class="dropdown-item disabled">（仅展示三个月以内的数据）</li>
             </ul>
           </div>
           <PassInEveryMonth :month="calendarControl.currentMonth"
@@ -193,7 +193,10 @@ let iWantData = () => {
   $socket.send({
     action: 'getData',
     api: 'pass_in_out',
-    api_body: { begin: dayjs().subtract(3, 'month').format("YYYY-MM-DD"), end: dayjs().format('YYYY-MM-DD') },
+    api_body: {
+      begin: dayjs().subtract(2, 'month').startOf('month').format("YYYY-MM-DD"),
+      end: dayjs().format('YYYY-MM-DD')
+    },
     socketType: 'pass_in_out_months'
   })
 }
@@ -203,7 +206,7 @@ let iWantData = () => {
 let fetchDateAndSetProps = (resp) => {
   calendarControl.yearMonthList = resp['dataRange'].map(item => {
     return item.split("-")
-  })
+  }).reverse()
 }
 
 // 日期选择后触发的事件(修改年份和月份)

@@ -182,7 +182,7 @@ let inOutImpl = (request) => {
     const { begin, end } = request.api_body
     return new Promise((resolve, reject) => {
         let sql = `SELECT *
-                   FROM passin_count
+                   FROM inout_count
                    WHERE date BETWEEN '${ begin }' AND '${ end }'`
         db.all(sql, (err, rows) => {
             try {
