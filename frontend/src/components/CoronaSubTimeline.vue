@@ -14,7 +14,7 @@ import useThemeStore from '@/store/modules/theme'
 import dayjs from 'dayjs'
 
 const themeStore = useThemeStore()
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 import '@/utils/EChartsThemes/dark'
@@ -26,7 +26,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'corona',
     api_body: { begin: '2022-09-01', end: dayjs().format('YYYY-MM-DD') },
@@ -102,7 +102,7 @@ let screenAdapt = () => {
 }
 
 let reloadComponent = () => {
-  $socket.registerCallBack('corona_all', getData)
+  proxy.$socket.registerCallBack('corona_all', getData)
   if (myChart) myChart.dispose()
   initChart()
   iWantData()
@@ -124,6 +124,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('corona_all')
+  proxy.$socket.unRegisterCallBack('corona_all')
 })
 </script>

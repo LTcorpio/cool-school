@@ -7,15 +7,14 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { getCurrentInstance, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import "echarts-wordcloud/dist/echarts-wordcloud.min"
 import { debounce } from "@/utils/debounce";
 import { option as chartOption } from "@/components/chartOptions/wordcloudMapOpt";
 import useThemeStore from '@/store/modules/theme'
-import { get } from "core-js/internals/reflect-metadata";
 
 const themeStore = useThemeStore()
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 
@@ -29,7 +28,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'surname',
     socketType: 'surname'
@@ -65,7 +64,7 @@ let screenAdapt = () => {
 }
 
 let reloadComponent = () => {
-  $socket.registerCallBack('surname', getData)
+  proxy.$socket.registerCallBack('surname', getData)
   if (myChart) myChart.dispose()
   initChart()
   iWantData()
@@ -86,7 +85,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('surname')
+  proxy.$socket.unRegisterCallBack('surname')
 })
 
 defineExpose({

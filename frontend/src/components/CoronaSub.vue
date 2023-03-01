@@ -13,7 +13,7 @@ import { option as chartOption } from "@/components/chartOptions/coronaBarChartO
 import useThemeStore from '@/store/modules/theme'
 
 const themeStore = useThemeStore()
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 
@@ -31,7 +31,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'corona',
     // TODO 实时爬虫还没有开发，开发完毕后将使用当日的日期，目前先使用历史数据
@@ -126,7 +126,7 @@ let startInterval = () => {
 }
 
 let reloadComponent = () => {
-  $socket.registerCallBack('corona_latest', getData)
+  proxy.$socket.registerCallBack('corona_latest', getData)
   if (myChart) myChart.dispose()
   initChart()
   iWantData()
@@ -152,7 +152,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearInterval(timer.value)
   timer.value = null
-  $socket.unRegisterCallBack('corona_latest')
+  proxy.$socket.unRegisterCallBack('corona_latest')
 })
 
 defineExpose({

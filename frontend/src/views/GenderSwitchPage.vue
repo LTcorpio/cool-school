@@ -1,7 +1,7 @@
 <template>
     <div class="com-page">
         <!-- 两个图表实现左右切换 -->
-      <div id="chartControls" ref="chartControls" :class="themeStore.globalTheme === 'dark' ? 'carousel slide' : 'carousel carousel-dark slide'" data-bs-ride="carousel">
+      <div id="chartControls" ref="chartControls" :class="themeStore.globalTheme === 'dark' ? 'carousel carousel-light slide' : 'carousel carousel-dark slide'" data-bs-ride="carousel">
         <div class="carousel-indicators">
           <button type="button" data-bs-target="#chartControls" data-bs-slide-to="0" class="active" aria-current="true"></button>
           <button type="button" data-bs-target="#chartControls" data-bs-slide-to="1"></button>
@@ -33,6 +33,7 @@ import { ref, onMounted, nextTick } from "vue";
 import useThemeStore from '@/store/modules/theme'
 
 const themeStore = useThemeStore()
+console.log(themeStore.globalTheme)
 
 let chartControls = ref(), primary = ref(), secondary = ref()
 

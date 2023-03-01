@@ -14,7 +14,7 @@ import useThemeStore from '@/store/modules/theme'
 import bootstrap from 'bootstrap/dist/js/bootstrap'
 
 const themeStore = useThemeStore()
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 
@@ -51,7 +51,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'region',
     api_body: { province: '全国' },
@@ -60,7 +60,7 @@ let iWantData = () => {
 }
 
 let iWantDrillData = (provinceName) => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'region',
     api_body: { province: provinceName },
@@ -125,8 +125,8 @@ let screenAdapt = () => {
 }
 
 let reloadComponent = () => {
-  $socket.registerCallBack('region_china', getData)
-  $socket.registerCallBack('region_drill', getDownData)
+  proxy.$socket.registerCallBack('region_china', getData)
+  proxy.$socket.registerCallBack('region_drill', getDownData)
   if (myChart) myChart.dispose()
   initChart()
   iWantData()
@@ -148,8 +148,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('region_china')
-  $socket.unRegisterCallBack('region_drill')
+  proxy.$socket.unRegisterCallBack('region_china')
+  proxy.$socket.unRegisterCallBack('region_drill')
 })
 
 defineExpose({

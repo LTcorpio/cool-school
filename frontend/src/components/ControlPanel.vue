@@ -3,21 +3,17 @@
     <div class="panel">
       <!-- 主题切换单选 -->
       <div class="btn-group" role="group">
-        <input id="dark_mode" :checked="themeStore.globalTheme === 'dark'" autocomplete="off" class="btn-check" name="btn-radio"
+        <input id="dark_mode" :checked="themeStore.globalTheme === 'dark'" autocomplete="off" class="btn-check"
+               name="btn-radio"
                type="radio" @change="changeTheme('dark')">
         <label class="btn btn-outline-secondary" for="dark_mode"><i class="bi bi-moon"></i></label>
-        <input id="light_mode" :checked="themeStore.globalTheme === 'light'" autocomplete="off" class="btn-check" name="btn-radio"
+        <input id="light_mode" :checked="themeStore.globalTheme === 'light'" autocomplete="off" class="btn-check"
+               name="btn-radio"
                type="radio" @change="changeTheme('light')">
         <label class="btn btn-outline-secondary" for="light_mode"><i class="bi bi-sun"></i></label>
       </div>
 
-      <!-- 在线聊天室 时间原因放弃此功能 -->
-<!--      <button class="btn btn-outline-secondary">-->
-<!--        <i class="bi bi-chat-dots"></i>-->
-<!--        在线聊天室-->
-<!--      </button>-->
-
-      <!-- 问题反馈 -->
+      <!-- 问题反馈/留言板 -->
       <button class="btn btn-outline-secondary" data-bs-target="#contactModal" data-bs-toggle="modal">
         <i class="bi bi-question-circle"></i>
         问题反馈
@@ -41,6 +37,12 @@
         <div class="modal-body">
           <div v-if="submitForm.tipLevel !== 0" ref="tipAlert" v-html="submitForm.tipAlert"></div>
           <div class="form-floating mt-3 mb-3">
+            <select id="device" v-model="submitForm.device" class="form-select">
+              <option value="1" selected>LTcorpio</option>
+            </select>
+            <label for="device">推送设备</label>
+          </div>
+          <div class="form-floating mb-3">
             <input id="title" v-model="submitForm.title" class="form-control" placeholder="标题" type="text">
             <label for="title">标题</label>
           </div>
@@ -51,8 +53,13 @@
           </div>
         </div>
         <div class="modal-footer">
+          <div class="col text-start">
+            内容尽可能简短，勿包含特殊字符。如果问题较复杂，请
+            <a href="mailto:ltcorpio@outlook.com" class="btn btn-sm btn-outline-success">发送邮件</a> 。
+          </div>
           <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">取消</button>
-          <button class="btn btn-primary" type="button" @click="submitMsg()" :disabled="buttonDisabled" v-text="buttonText"></button>
+          <button :disabled="buttonDisabled" class="btn btn-primary" type="button" @click="submitMsg()"
+                  v-text="buttonText"></button>
         </div>
       </div>
     </div>
@@ -61,23 +68,26 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, onBeforeMount, onBeforeUnmount, ref, reactive, computed } from 'vue'
+import { computed, getCurrentInstance, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue'
 import dayjs from 'dayjs'
-import useThemeStore from '@/store/modules/theme'
 
+import useThemeStore from '@/store/modules/theme'
 const themeStore = useThemeStore()
 
-const { $http, $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 // 问题反馈功能实现
-let submitForm = reactive({
-  title: '',
-  msg: '',
-  tipLevel: 0,  // 0-不显示，1-未输入，2-推送失败，3-推送成功
-  tipAlert: ''
-})
+let userListMap = { '1': [ 'LTcorpio', 'cKmqmUBKKyzSYt5CCgDxED' ] },
+    submitForm = reactive({
+      device: '1',
+      title: '',
+      msg: '',
+      tipLevel: 0,  // 0-不显示，1-未输入，2-推送失败，3-推送成功
+      tipAlert: ''
+    })
 let submitMsg = () => {
-  if (submitForm.msg.replace(/\s/g, "") === '') {
+  let title = submitForm.title.replace(/\s/g, ""), content = submitForm.msg.replace(/\s/g, "")
+  if (content === '') {
     submitForm.tipLevel = 1
     submitForm.tipAlert = `<div class="alert alert-primary" role="alert">请输入需要推送的内容！</div>`
   } else {
@@ -85,25 +95,28 @@ let submitMsg = () => {
     params.append('param1', 'value1');
     params.append('param2', 'value2');
     submitForm.tipAlert = `<div class="alert alert-secondary" role="alert">推送中</div>`
-    $http({
+    title = title.replace(/\//g, "")
+    content = content.replace(/\//g, "")
+    proxy.$http({
       method: 'post',
-      url: `https://api.day.app/cKmqmUBKKyzSYt5CCgDxED${ submitForm.title !== '' ? '/' + submitForm.title : '' }/${ submitForm.msg }`
+      url: `https://api.day.app/${ userListMap[submitForm.device][1] }${ title !== '' ? '/' + title : '' }/${ content }`
     }).then(res => {
       // 如果消息发送成功，则设置间隔（发送成功时的时间存储在localStorage中，按钮是否可点击取决于该值）
       localStorage.setItem("sendDataTime", dayjs().unix().toString())
       // 验证按钮是否可用：设置间隔时、页面加载时。
       judgingButtonAvail()
       submitForm.tipLevel = 3
-      submitForm.tipAlert = `<div class="alert alert-success" role="alert">消息于 ${ dayjs(res.data.timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') } 成功推送！</div>`
+      submitForm.tipAlert = `<div class="alert alert-success" role="alert">消息于 ${ dayjs(res.data.timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') } 成功推送给 ${ userListMap[submitForm.device][0] }。</div>`
     }).catch(err => {
       submitForm.tipLevel = 2
       submitForm.tipAlert = `<div class="alert alert-danger" role="alert">推送失败！${ err.message }</div>`
     })
   }
 }
-// 以下是对发送间隔的限制
+
+// 以下是对发送间隔的限制，此处使用computed计算属性
 const countDown = ref(0)
-const buttonText = computed(() => countDown.value === 0 ? '发送' : `${countDown.value}s后可再次发送`)
+const buttonText = computed(() => countDown.value === 0 ? '发送' : `${ countDown.value }s后可再次发送`)
 const buttonDisabled = computed(() => countDown.value !== 0)
 let judgingButtonAvail = () => {
   // 直接从localStorage中读取上一次发送消息的时间戳
@@ -126,38 +139,47 @@ let judgingButtonAvail = () => {
 
 // 更换主题功能实现
 let changeTheme = (themeName) => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'themeChange',
+    // globalTheme: dark/light，于 @src/assets/css/_themes.css 中控制
     globalTheme: themeName,
+    // chartTheme: dark/walden，此为 ECharts 的主题名称，可以使用官网提供的内置主题也可以自定义主题
+    // 自定义主题存放位置：@src/utils/EChartsThemes
     chartTheme: themeName === 'dark' ? 'dark' : 'walden',
     socketType: 'themeChange'
   })
-}
-let applyChangeTheme = (resp) => {
+}, applyChangeTheme = (resp) => {
+  // Bootstrap 5.3版本中增加了“data-bs-theme”，可对组件的明/暗样式进行控制
+  document.documentElement.setAttribute('data-bs-theme', resp.globalTheme)
+  // 修改 data-bs-theme 的值只会对 Bootstrap 相关的组件生效，图表的主题需要另行更改
   themeStore.setGlobalTheme(resp.globalTheme)
   themeStore.setChartTheme(resp.chartTheme)
-  document.documentElement.setAttribute('theme', resp.globalTheme)
 }
 /* [NOTICE]
-   默认主题为黑色，如果主题(在状态中)已存在则使用store的值
+   默认主题为黑色，如果主题在store中已存在则直接使用，可实现多个客户端同步到同一主题
    多端同步，新的客户端连接后，会使得当前已连接的客户端主题恢复默认，
    因为状态存储是localStorage，默认仅对当前浏览器有效
    如果要实现新接入的客户端也要保留状态，只能够将状态存储在数据库中
  */
 
 onBeforeMount(() => {
+  // 组件挂载前调用该函数，判断留言板的发送按钮是否可用，控制发送消息的频次
+  judgingButtonAvail()
+
+  proxy.$socket.registerCallBack('themeChange', applyChangeTheme)
+
+  // store中没有主题，设置默认主题为黑色
   if (themeStore.globalTheme === '') {
     themeStore.setGlobalTheme('dark')
     themeStore.setChartTheme('dark')
   }
+  // store中有主题，使用该主题
   changeTheme(themeStore.globalTheme)
-  $socket.registerCallBack('themeChange', applyChangeTheme)
-  // 组件挂载前调用该函数，判断按钮是否可用
-  judgingButtonAvail()
+  // proxy.$socket.registerCallBack('themeChange', applyChangeTheme)
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('themeChange')
+  proxy.$socket.unRegisterCallBack('themeChange')
 })
 </script>
 
@@ -174,9 +196,5 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-}
-
-.modal {
-  color: #161522;
 }
 </style>

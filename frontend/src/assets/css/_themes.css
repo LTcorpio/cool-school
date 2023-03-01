@@ -1,11 +1,11 @@
-:root[theme='light'] {
+:root[data-bs-theme='light'] {
     --bgColor: #e7e7e7;
     --textColor: #666;
     --componentBgColor: #fcfcfc;
     color-scheme: light;
 }
 
-:root[theme='dark'] {
+:root[data-bs-theme='dark'] {
     --bgColor: #222;
     --textColor: #eee;
     --componentBgColor: #333;

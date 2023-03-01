@@ -12,7 +12,7 @@
 <script setup>
 import { getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, reactive } from 'vue'
 
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 let debounce = require('../utils/debounce').debounce
 
@@ -23,7 +23,7 @@ let raw_data = reactive({ "data": [] }),
     })
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'digits',
     socketType: 'digits'
@@ -41,7 +41,7 @@ let screenAdapt = () => {
 }
 
 onBeforeMount(() => {
-  $socket.registerCallBack('digits', getData)
+  proxy.$socket.registerCallBack('digits', getData)
 })
 
 onMounted(() => {
@@ -54,7 +54,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('digits')
+  proxy.$socket.unRegisterCallBack('digits')
 })
 </script>
 

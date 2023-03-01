@@ -7,14 +7,14 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { getCurrentInstance, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { debounce } from "@/utils/debounce";
 import { option as chartOption } from '@/components/chartOptions/passinCalendarOpt'
 import dayjs from "dayjs";
 import useThemeStore from '@/store/modules/theme'
 
 const themeStore = useThemeStore()
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 
@@ -32,7 +32,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'pass_in_out',
     api_body: {
@@ -45,8 +45,8 @@ let iWantData = () => {
 
 let getData = (resp) => {
   chartOption.dataset.source = resp.data.reduce((obj, item) => {
-    if (dayjs(item.date).year() === props.year && dayjs(item.date).month() + 1 === props.month) {
-      obj.push({ "name": item.date, "value": item.in_count })
+    if (dayjs(item['date']).year() === props.year && dayjs(item['date']).month() + 1 === props.month) {
+      obj.push({ "name": item['date'], "value": item['in_count'] })
     }
     return obj
   }, [])
@@ -75,7 +75,7 @@ let screenAdapt = () => {
 }
 
 let reloadComponent = () => {
-  $socket.registerCallBack('pass_in_out_all', getData)
+  proxy.$socket.registerCallBack('pass_in_out_all', getData)
   if (myChart)  myChart.dispose()
   initChart()
   iWantData()
@@ -97,7 +97,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('pass_in_out_all')
+  proxy.$socket.unRegisterCallBack('pass_in_out_all')
 })
 
 defineExpose({

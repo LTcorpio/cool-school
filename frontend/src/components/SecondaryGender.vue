@@ -7,14 +7,14 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue'
+import { getCurrentInstance, inject, onBeforeUnmount, onMounted, ref } from 'vue'
 import { debounce } from "@/utils/debounce";
 import { option as chartOption } from "@/components/chartOptions/genderBarChartOpt";
 import useThemeStore from '@/store/modules/theme'
 
 const themeStore = useThemeStore()
 const echarts = inject('echarts')
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 let chartDom = ref(null),
     domHeight = ref(null),
@@ -27,7 +27,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'gender',
     api_body: { range: 'secondary' },
@@ -72,7 +72,7 @@ let screenAdapt = () => {
     xAxis: { axisLabel: { fontSize: AdaptDomHeight / 1.2 } },
     yAxis: { axisLabel: { fontSize: AdaptDomHeight } },
     series: [
-      // 加入type，避免控制台报错：[ECharts] Unkown series undefined
+      // 加入type，避免控制台报错：[ECharts] Unknown series undefined
       { type: 'bar', label: { fontSize: AdaptDomHeight / 1.2 } },
       { type: 'bar', label: { fontSize: AdaptDomHeight / 1.2 } }
     ]
@@ -82,7 +82,7 @@ let screenAdapt = () => {
 }
 
 let reloadComponent = () => {
-  $socket.registerCallBack('gender_secondary', getData)
+  proxy.$socket.registerCallBack('gender_secondary', getData)
   if (myChart) myChart.dispose()
   initChart()
   iWantData()
@@ -104,7 +104,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('gender_secondary')
+  proxy.$socket.unRegisterCallBack('gender_secondary')
 })
 
 defineExpose({

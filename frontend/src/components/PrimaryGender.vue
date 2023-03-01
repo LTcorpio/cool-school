@@ -14,7 +14,7 @@ import useThemeStore from '@/store/modules/theme'
 
 const themeStore = useThemeStore()
 
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 
@@ -28,7 +28,7 @@ let initChart = () => {
 }
 
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'gender',
     api_body: { range: 'primary' },
@@ -52,7 +52,9 @@ let screenAdapt = () => {
     title: { textStyle: { fontSize: AdaptDomHeight + 10 } },
     legend: { textStyle: { fontSize: AdaptDomHeight } },
     series: {
-      type: 'pie',  // 避免控制台报错：[ECharts] Unkown series undefined
+      // 合并 ECharts 配置项，需要在series中带上当前图表的类型（必须是type，id没有用），
+      // 避免控制台报错：[ECharts] Unknown series undefined
+      type: 'pie',
       label: { fontSize: AdaptDomHeight },
       emphasis: { label: { fontSize: AdaptDomHeight * 2 } }
     }
@@ -64,7 +66,7 @@ let reloadComponent = () => {
   // 图表放大后，在Modal中的模态框也注册了回调，此时大屏的回调失效
   // 模态框销毁后，再次切换主题将导致图表无法加载，因为此时的回调已经被占用，没有及时注册
   // 所以主题变化后，需要及时注册回调。
-  $socket.registerCallBack('gender', getData)
+  proxy.$socket.registerCallBack('gender', getData)
   if (myChart) myChart.dispose()
   initChart()
   iWantData()
@@ -87,7 +89,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('gender')
+  proxy.$socket.unRegisterCallBack('gender')
 })
 
 // 暴露方法

@@ -11,7 +11,7 @@
     "@iconfu/svg-inject": "^1.2.3",
     "@popperjs/core": "^2.11.6",
     "axios": "^1.2.0",
-    "bootstrap": "^5.2.3",
+    "bootstrap": "^5.3.0-alpha1",
     "bootstrap-icons": "^1.10.2",
     "core-js": "^3.8.3",
     "dayjs": "^1.11.6",

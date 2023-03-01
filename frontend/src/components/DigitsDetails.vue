@@ -14,7 +14,7 @@ import useThemeStore from '@/store/modules/theme'
 
 const themeStore = useThemeStore()
 
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const { proxy } = getCurrentInstance();
 
 const echarts = inject('echarts')
 
@@ -28,7 +28,7 @@ let initChart = () => {
 }
 
 let iWantData_1 = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'studentAgg',
     socketType: 'studentAgg'
@@ -36,7 +36,7 @@ let iWantData_1 = () => {
 }
 
 let iWantData_2 = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'departmentAgg',
     socketType: 'departmentAgg'
@@ -86,8 +86,8 @@ let reloadComponent = () => {
   // 图表放大后，在Modal中的模态框也注册了回调，此时大屏的回调失效
   // 模态框销毁后，再次切换主题将导致图表无法加载，因为此时的回调已经被占用，没有及时注册
   // 所以主题变化后，需要及时注册回调。
-  $socket.registerCallBack('studentAgg', getData_stu)
-  $socket.registerCallBack('departmentAgg', getData_dept)
+  proxy.$socket.registerCallBack('studentAgg', getData_stu)
+  proxy.$socket.registerCallBack('departmentAgg', getData_dept)
   if (myChart) myChart.dispose()
   initChart()
   iWantData_1()
@@ -111,8 +111,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  $socket.unRegisterCallBack('studentAgg')
-  $socket.unRegisterCallBack('departmentAgg')
+  proxy.$socket.unRegisterCallBack('studentAgg')
+  proxy.$socket.unRegisterCallBack('departmentAgg')
 })
 
 // 暴露方法

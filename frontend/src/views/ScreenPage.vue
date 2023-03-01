@@ -206,7 +206,7 @@ let iWantData = () => {
 let fetchDateAndSetProps = (resp) => {
   calendarControl.yearMonthList = resp['dataRange'].map(item => {
     return item.split("-")
-  }).reverse()
+  })//.reverse()
 }
 
 // 日期选择后触发的事件(修改年份和月份)
