@@ -19,8 +19,6 @@ module.exports = async () => {
         currDate = currDate.subtract(1, 'day')
     }
     console.log('inout_count -- 新的模拟数据插入成功')
-
-
 }
 
 // 封装db.run()方法，返回Promise对象
