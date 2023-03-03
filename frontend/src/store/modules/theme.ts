@@ -11,17 +11,20 @@ const useThemeStore = defineStore({
     // 定义数据，返回对象和属性
     state: () => ({
         globalTheme: '',
-        chartTheme: ''
+        chartTheme: '',
+        inOrOut: ''
     }),
     // 获取store模块的属性
     getters: {
         getGlobalTheme: (state) => state.globalTheme,
-        getChartTheme: (state) => state.chartTheme
+        getChartTheme: (state) => state.chartTheme,
+        getInOrOut: (state) => state.inOrOut
     },
     // 设置store模块的属性
     actions: {
         setGlobalTheme(theme: string) { this.globalTheme = theme },
-        setChartTheme(theme: string) { this.chartTheme = theme }
+        setChartTheme(theme: string) { this.chartTheme = theme },
+        setInOrOut(dataSource: string) { this.inOrOut = dataSource }
     },
     // 开启数据缓存(pinia-plugin-persist)
     persist: {
@@ -32,7 +35,7 @@ const useThemeStore = defineStore({
                 // storage  存储策略可指定为localStorage或sessionStorage
                 storage: localStorage,
                 // 可以通过paths指定需要持久化的值(state)，其他没有指定的则不会持久化
-                paths: [ 'globalTheme', 'chartTheme' ]
+                paths: [ 'globalTheme', 'chartTheme', 'inOrOut' ]
             }
         ]
     }

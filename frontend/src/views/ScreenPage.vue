@@ -24,7 +24,9 @@
           <PrimaryGender ref="ltRef" v-if="componentMap.ltRef.show"></PrimaryGender>
         </div>
         <div id="left-bottom">
-          <div class="resize">
+          <div class="btn-group resize" role="group">
+            <button :class="themeStore.globalTheme === 'dark' ? 'btn btn-dark' : 'btn btn-light'" type="button"
+                    @click="switchInOrOut" v-text="inOrOutControl.desc"></button>
             <button :class="themeStore.globalTheme === 'dark' ? 'btn btn-dark dropdown-toggle' : 'btn btn-light dropdown-toggle'" data-bs-toggle="dropdown" type="button">
               <i class="bi bi-calendar-date"></i>
             </button>
@@ -43,8 +45,11 @@
               <li class="dropdown-item disabled">（仅展示三个月以内的数据）</li>
             </ul>
           </div>
-          <PassInEveryMonth :month="calendarControl.currentMonth"
-                            :year="calendarControl.currentYear"></PassInEveryMonth>
+          <PassInEveryMonth
+              :month="calendarControl.currentMonth"
+              :year="calendarControl.currentYear"
+              :source="inOrOutControl.dataSource"
+          ></PassInEveryMonth>
         </div>
       </section>
       <section class="screen-middle">
@@ -170,6 +175,10 @@ let ltRef = ref(), mtRef = ref(), rtRef = ref(), rbRef = ref(),
       currentYear: dayjs().year(),
       currentMonth: dayjs().month() + 1,
       yearMonthList: null
+    }),
+    inOrOutControl = reactive({
+      dataSource: 'in_count',
+      desc: '进校'
     })
 
 // 放大指定图表(动态绑定组件)
@@ -188,6 +197,17 @@ let chartClosed = () => {
   currentChart.chartComponent = null
 }
 
+// 进校或出校控制
+let switchInOrOut = () => {
+  if (inOrOutControl.desc === '进校') {
+    inOrOutControl.dataSource = 'out_count'
+    inOrOutControl.desc = '出校'
+  } else {
+    inOrOutControl.dataSource = 'in_count'
+    inOrOutControl.desc = '进校'
+  }
+}
+
 // 获取日历组件下拉框数据
 let iWantData = () => {
   $socket.send({
@@ -195,7 +215,8 @@ let iWantData = () => {
     api: 'pass_in_out',
     api_body: {
       begin: dayjs().subtract(2, 'month').startOf('month').format("YYYY-MM-DD"),
-      end: dayjs().format('YYYY-MM-DD')
+      end: dayjs().format('YYYY-MM-DD'),
+      source: inOrOutControl.dataSource
     },
     socketType: 'pass_in_out_months'
   })

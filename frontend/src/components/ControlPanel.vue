@@ -138,6 +138,8 @@ let judgingButtonAvail = () => {
 }
 
 // 更换主题功能实现
+// changeTheme: 同步主题至客户端，不会修改主题
+// applyChangeTheme: 根据 store 值设置主题，不会同步至客户端
 let changeTheme = (themeName) => {
   proxy.$socket.send({
     action: 'themeChange',
@@ -155,12 +157,6 @@ let changeTheme = (themeName) => {
   themeStore.setGlobalTheme(resp.globalTheme)
   themeStore.setChartTheme(resp.chartTheme)
 }
-/* [NOTICE]
-   默认主题为黑色，如果主题在store中已存在则直接使用，可实现多个客户端同步到同一主题
-   多端同步，新的客户端连接后，会使得当前已连接的客户端主题恢复默认，
-   因为状态存储是localStorage，默认仅对当前浏览器有效
-   如果要实现新接入的客户端也要保留状态，只能够将状态存储在数据库中
- */
 
 onBeforeMount(() => {
   // 组件挂载前调用该函数，判断留言板的发送按钮是否可用，控制发送消息的频次
@@ -168,14 +164,16 @@ onBeforeMount(() => {
 
   proxy.$socket.registerCallBack('themeChange', applyChangeTheme)
 
+  // 默认主题为黑色，如果主题在store中已存在则直接使用，可实现多个客户端同步到同一主题
   // store中没有主题，设置默认主题为黑色
   if (themeStore.globalTheme === '') {
-    themeStore.setGlobalTheme('dark')
-    themeStore.setChartTheme('dark')
+    applyChangeTheme({ globalTheme: 'dark', chartTheme: 'dark' })
+    // 20230301 解决了【新的客户端连接后，会使得当前已连接的客户端主题强制恢复默认】的问题
+    // 复现问题：删掉这里的return即可
+    return
   }
   // store中有主题，使用该主题
   changeTheme(themeStore.globalTheme)
-  // proxy.$socket.registerCallBack('themeChange', applyChangeTheme)
 })
 
 onBeforeUnmount(() => {

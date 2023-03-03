@@ -12,10 +12,10 @@ export let option = reactive({
     },
     tooltip: {
         position: 'top',
-        textStyle: {},
-        formatter: (params) => {
-            return `<b>${ params.value.name }</b><br />${ params.marker }<b>出校人数</b>\t${ params.value.value }`
-        }
+        textStyle: {}
+        /*formatter: (params) => {
+            return `<b>${ params.value.name }</b><br />${ params.marker }<b>人数</b>\t${ params.value.value }`
+        }*/
     },
     visualMap: {
         show: false,
@@ -48,7 +48,7 @@ export let option = reactive({
         range: []
     },
     series: {
-        name: '出校人数',
+        name: '人数',
         type: 'heatmap',
         coordinateSystem: 'calendar',
         label: {
