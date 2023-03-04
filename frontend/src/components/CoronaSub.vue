@@ -35,7 +35,7 @@ let iWantData = () => {
     action: 'getData',
     api: 'corona',
     // TODO 实时爬虫还没有开发，开发完毕后将使用当日的日期，目前先使用历史数据
-    api_body: { begin: '2022-12-18', end: '2022-12-18' },
+    api_body: { begin: '2022-12-04', end: '2022-12-04' },
     socketType: 'corona_latest'
   })
 }

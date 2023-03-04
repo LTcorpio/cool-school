@@ -6,6 +6,7 @@
 
 ```
 cd ./backend
+cnpm i
 node server.js
 ```
 
