@@ -13,6 +13,12 @@
         <label class="btn btn-outline-secondary" for="light_mode"><i class="bi bi-sun"></i></label>
       </div>
 
+      <!-- 数据更新历史 -->
+      <button class="btn btn-outline-secondary" data-bs-target="#changeHistoryModal" data-bs-toggle="modal">
+        <i class="bi bi-clock-history"></i>
+        数据更新历史
+      </button>
+
       <!-- 问题反馈/留言板 -->
       <button class="btn btn-outline-secondary" data-bs-target="#contactModal" data-bs-toggle="modal">
         <i class="bi bi-question-circle"></i>

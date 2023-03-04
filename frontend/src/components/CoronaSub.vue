@@ -47,7 +47,7 @@ let getData = async (resp) => {
   chartData.length = chartData.data.length
 
   myChart.setOption({
-    title: { text: `各分院疫情填报率(2022-12-18)` },
+    title: { text: `各分院疫情填报率(2022-12-04)` },
     dataset: { source: chartData.data }
   })
 }

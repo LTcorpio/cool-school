@@ -37,7 +37,7 @@ export default class SocketService {
                 this.connect()
             }, this.reConnectCount * 1000)
         }
-        this.ws.onmessage = msg => {
+        this.ws.onmessage = (msg) => {
             const recvData = JSON.parse(msg.data)
             const socketType = recvData.socketType
             if (this.callBackMapping[socketType]) {
@@ -46,6 +46,8 @@ export default class SocketService {
                     const realData = recvData.data
                     this.callBackMapping[socketType].call(this, realData)
                 } else if (action === 'themeChange') {
+                    this.callBackMapping[socketType].call(this, recvData)
+                } else if (action === 'updateData') {
                     this.callBackMapping[socketType].call(this, recvData)
                 }
             }
