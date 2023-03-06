@@ -18,11 +18,11 @@ export default class SocketService {
     reConnectCount = 0
     timer = null
 
-    connect() {
+    connect(url) {
         if (!window.WebSocket) {
             return alert("您的浏览器不支持WebSocket！")
         }
-        this.ws = new WebSocket("ws://localhost:3090")
+        this.ws = new WebSocket(url)
         this.ws.onopen = () => {
             console.log('[SUCCESS] 连接服务端成功')
             this.connected = true
@@ -34,7 +34,7 @@ export default class SocketService {
             this.connected = false
             this.reConnectCount++
             this.timer = setTimeout(() =>{
-                this.connect()
+                this.connect(url)
             }, this.reConnectCount * 1000)
         }
         this.ws.onmessage = (msg) => {

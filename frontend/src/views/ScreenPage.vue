@@ -260,6 +260,13 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less" scoped>
+@font-face {
+  font-family: 'SmileySans';
+  src: url('../assets/fonts/SmileySans.woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .screen-container {
   width: 100%;
   height: 100%;
@@ -292,7 +299,7 @@ onBeforeUnmount(() => {
     justify-content: center;
     align-items: center;
     height: 100%;
-    font-family: '得意黑', 'Cascadia Mono', 'Microsoft YaHei', monospace;
+    font-family: 'SmileySans', 'Cascadia Mono', 'Microsoft YaHei', monospace;
     font-weight: 400;
     font-size: 42px;
   }

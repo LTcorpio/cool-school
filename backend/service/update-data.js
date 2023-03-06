@@ -38,7 +38,7 @@ module.exports = async (wss) => {
     const clients = wss.clients
     for (const client of clients) {
         // 在inout_count表中将更新后结果进行推送
-        const rows = await all('SELECT * FROM inout_count WHERE date = ?', [currDate])
+        const rows = await all('SELECT * FROM inout_count WHERE date = ?', [currDate.format('YYYY-MM-DD')])
         const wsSendMsgToChart = JSON.stringify({
             action: 'updateData',
             data: rows,

@@ -3,6 +3,10 @@ import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
     {
+        path: '/',
+        redirect: '/screen'
+    },
+    {
         path: '/screen',
         name: '智慧校园数据看板',
         component: () => import('../views/ScreenPage.vue'),
@@ -10,10 +14,6 @@ const routes: Array<RouteRecordRaw> = [
             title: '智慧校园数据看板',
             keepAlive: true
         }
-    },
-    {
-        path: '/:pathMatch(.*)*',
-        redirect: '/screen'
     }
 ]
 

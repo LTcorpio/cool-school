@@ -2,6 +2,7 @@ const { defineConfig } = require('@vue/cli-service')
 
 module.exports = defineConfig({
     transpileDependencies: true,
+    productionSourceMap: false,
     lintOnSave: false,
     // 设置页面标题(通过修改Webpack配置)
     chainWebpack: (config) => {
@@ -11,7 +12,7 @@ module.exports = defineConfig({
                 return args
             })
     },
-    devServer: {
+    /*devServer: {
         port: '8999',
         open: true,
         proxy: {
@@ -21,5 +22,5 @@ module.exports = defineConfig({
                 changeOrigin: true
             }
         }
-    }
+    }*/
 })
