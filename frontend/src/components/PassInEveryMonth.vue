@@ -59,14 +59,12 @@ let getData = (resp) => {
 }
 
 let getUpdatedData = (resp) => {
-  // console.log("我是更新后数据的处理函数")
+  // console.log("我是在PassInEveryMonth中的更新后数据的处理函数")
   let upd = resp.data[0]['date'].split("-")
   if (props.year === Number(upd[0]) && props.month === Number(upd[1])) {
     chartOption.dataset.source = chartOption.dataset.source.map(item => {
       if (item.name === resp.data[0]['date']) {
-        let rtn = { ...item, value: props.source === 'in_count' ? resp.data[0]['in_count'] : resp.data[0]['out_count'] }
-        console.log(rtn)
-        return rtn;
+        return { ...item, value: props.source === 'in_count' ? resp.data[0]['in_count'] : resp.data[0]['out_count'] };
       } else return item;
     })
     myChart.setOption(chartOption)

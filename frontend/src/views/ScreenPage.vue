@@ -2,7 +2,7 @@
   <div class="screen-container" @keyup.esc="chartClosed()">
     <header class="screen-header">
       <div class="logo">
-        <img alt="" onload="SVGInject(this)" src="/svg/logo_standard.svg"/>
+        <img alt="" src="/svg/logo_standard.svg" ref="svgLogoRef" />
       </div>
       <div class="title">
         <span>智慧校园数据看板</span>
@@ -98,7 +98,7 @@
               <span><i class="bi bi-arrows-angle-expand"></i></span>
             </button>
           </div>
-          <SurnameWordcloud ref="rbRef" v-if="componentMap.rbRef.show"></SurnameWordcloud>
+          <SurnameWordCloud ref="rbRef" v-if="componentMap.rbRef.show"></SurnameWordCloud>
         </div>
       </section>
     </div>
@@ -134,6 +134,7 @@
 <script setup>
 import { getCurrentInstance, markRaw, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import dayjs from 'dayjs'
+import SVGInject from '@iconfu/svg-inject'
 
 import PrimaryGender from '@/components/PrimaryGender'
 import GenderSwitchPage from '@/views/GenderSwitchPage'
@@ -144,15 +145,15 @@ import CoronaSubTimeline from '@/components/CoronaSubTimeline'
 import DigitsOnly from '@/components/DigitsOnly'
 import DigitsDetails from '@/components/DigitsDetails'
 import ControlPanel from '@/components/ControlPanel'
-import SurnameWordcloud from '@/components/SurnameWordcloud'
+import SurnameWordCloud from '@/components/SurnameWordCloud.vue'
 
 import useThemeStore from '@/store/modules/theme'
-const themeStore = useThemeStore()
-
 import '@/utils/EChartsThemes/dark'
 import '@/utils/EChartsThemes/walden'
 
-const { $socket } = getCurrentInstance().appContext.config.globalProperties;
+const themeStore = useThemeStore()
+const { proxy } = getCurrentInstance()
+const svgLogoRef = ref()
 
 let componentMap = reactive({
   // 图表放大关闭后仅刷新指定图表而不是所有图表，指定图表是否显示即可
@@ -161,7 +162,7 @@ let componentMap = reactive({
   mbRef: { show: true, component: markRaw(DigitsDetails), title: '在校人员所属部门分布' },
   rtRef: { show: true, component: markRaw(CoronaSub), title: '各分院疫情填报率' },
   rtRef2: { show: true, component: markRaw(CoronaSubTimeline), title: '各分院历史疫情填报率明细' },
-  rbRef: { show: true, component: markRaw(SurnameWordcloud), title: '学生姓氏词云' },
+  rbRef: { show: true, component: markRaw(SurnameWordCloud), title: '学生姓氏词云' },
 })
 
 let timer = ref(null), currentTime = ref(null)
@@ -210,7 +211,7 @@ let switchInOrOut = () => {
 
 // 获取日历组件下拉框数据
 let iWantData = () => {
-  $socket.send({
+  proxy.$socket.send({
     action: 'getData',
     api: 'pass_in_out',
     api_body: {
@@ -238,10 +239,13 @@ let changeYearMonth = (year_month) => {
 }
 
 onBeforeMount(() => {
-  $socket.registerCallBack('pass_in_out_months', fetchDateAndSetProps)
+  proxy.$socket.registerCallBack('pass_in_out_months', fetchDateAndSetProps)
 })
 
 onMounted(() => {
+  // 不同于SVGInject官方写法，此处的写法更倾向于Vue，实现img标签转svg标签
+  svgLogoRef.value.onload = () => SVGInject(svgLogoRef.value)
+
   timer = window.setInterval(() => {
     currentTime.value = dayjs().format("YYYY-MM-DD HH:mm:ss")
   }, 1000)
@@ -250,7 +254,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.clearInterval(timer)
-  $socket.unRegisterCallBack('pass_in_out_months')
+  proxy.$socket.unRegisterCallBack('pass_in_out_months')
 })
 
 </script>

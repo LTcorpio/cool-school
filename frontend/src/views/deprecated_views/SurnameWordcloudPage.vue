@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import SurnameWordcloud from '@/components/SurnameWordcloud'
+import SurnameWordcloud from '@/components/SurnameWordCloud.vue'
 
 export default {
     components: {

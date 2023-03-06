@@ -1,7 +1,7 @@
 const WebSocket = require('ws')
 const queryData = require('./query-data')
 
-module.exports.listen = (port) => {
+module.exports = (port) => {
     const wss = new WebSocket.Server({
         port: port
     })
@@ -20,12 +20,13 @@ module.exports.listen = (port) => {
                 wss.clients.forEach(client => {
                     client.send(JSON.stringify(payload))
                 })
-                if (payload.action === 'themeChange') {
-                    console.log("修改主题", payload)
-                } else if (payload.action === 'updateData') {
+
+                if (payload.action === 'themeChange') console.log("修改主题", payload)
+                else if (payload.action === 'updateData') {
                     console.log("更新数据", payload)
                 }
             }
         })
     })
+    return wss
 }
